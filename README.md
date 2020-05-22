@@ -9,6 +9,6 @@ Simple python3 code to update SIM7600 firmware on Windows. Some messages are in 
 
 # Usage
 1. Connect SIM7600 to your PC
-2. Open CMD directly on src dir
+2. Open CMD directly repo dir
 3. Execute ```python updateFirmware.py```
 4. Follow "instructions"
