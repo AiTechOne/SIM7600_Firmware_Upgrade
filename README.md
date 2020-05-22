@@ -1,2 +1,14 @@
 # FWUpdateSim7600
-SImple code to upgrade SIM7600 firmware in windows platform
+Simple python3 code to update SIM7600 firmware on Windows. Some messages are in spanish, but it's very simple to use.
+
+# Testing using
+- W10
+- Fastboot 29.0.6-6198805 (should work with others)
+- Python3.7.4 
+- pyserial 3.4 package for python (should work with others)
+
+# Usage
+1. Connect SIM7600 to your PC
+2. Open CMD directly on src dir
+3. Execute ```python updateFirmware.py```
+4. Follow "instructions"
