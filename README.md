@@ -1,5 +1,5 @@
-# SIM7600 Firmware Update (Python3 Code)
-Simple python3 code to update SIM7600 firmware on Windows or Linux. Some messages are in spanish, but it's very simple to use.
+# SIM7600SA-H Firmware Update (Python3 Code)
+Simple python3 code to update SIM7600SA-H (may work with others but first check firmware!) firmware on Windows or Linux. Some messages are in spanish, but it's very simple to use.
 
 # Testing using
 - W10-Ubuntu20-Debian9
