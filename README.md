@@ -8,8 +8,8 @@ Simple python3 code to update SIM7600 firmware on Windows or Linux. Some message
 - pyserial 3.4 package for python (should work with others)
 
 # Usage
-0. If Linux: copy 99-simcom.rules to /etc/udev/rule.d/
-0. If Windows: add fastboot to Path
+- If Linux: copy 99-simcom.rules to /etc/udev/rule.d/
+- If Windows: add fastboot to Path
 
 1. Connect SIM7600 to your PC
 2. Open CMD directly repo dir
