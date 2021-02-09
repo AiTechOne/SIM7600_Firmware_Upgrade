@@ -13,8 +13,9 @@ import logging
 import subprocess
 import serial
 import time
+import os.path
 import os
-import sys
+import platform
 
 # TODO: mejorar subprocess.call para exportar salida en file_handler (solo se printea)
 
@@ -31,7 +32,7 @@ stream_handler.setFormatter(formatter)
 logger.addHandler(stream_handler)
 formatter2 = logging.Formatter('Upgrade Tool ->%(asctime)s(%(lineno)d-%(levelname)s): %(message)s')
 
-file_handler = logging.FileHandler("upgradeFW.log")
+file_handler = logging.FileHandler("log.log")
 file_handler.setFormatter(formatter2)
 logger.addHandler(file_handler)
 
@@ -39,20 +40,27 @@ logger.addHandler(file_handler)
 #                                                    Methods                                                     #
 ##################################################################################################################
 
-def findATPort():
-    ports = serial.tools.list_ports.comports()
-    atPort = None
-    for port, desc, _ in sorted(ports):
-        if "AT" in desc:
-            atPort = port
-            break
-    return atPort
+def find_at_port():
+    at_port = None
+    if platform.system() == 'Linux':
+        if os.path.isfile('/dev/SimAT'):
+            return '/dev/SimAT'
+    elif platform.system() == 'Windows':
+        ports = serial.tools.list_ports.comports()
+        at_port = None
+        for port, desc, _ in sorted(ports):
+            if "AT" in desc:
+                at_port = port
+                break
+    else:
+        logger.error("OS not 'supported' (check code and try manually)")
+    return at_port
 
-def getFWVersion(atPort):
+def get_current_fw_version(at_port):
     filteredResponse = None
     try:
         logger.debug("Connecting serial...")
-        ser = serial.Serial(port=atPort, baudrate=115200, timeout=1)
+        ser = serial.Serial(port=at_port, baudrate=115200, timeout=1)
         time.sleep(0.3)
         ser.reset_input_buffer()
         ser.write(b'AT+CGMR\r\n')
@@ -68,11 +76,11 @@ def getFWVersion(atPort):
         logger.exception(ex)
     return filteredResponse
 
-def initBootloader(atPort):
+def init_bootloader_mode(at_port):
     success = False
     try:
         logger.debug("Connecting serial...")
-        ser = serial.Serial(port=atPort, baudrate=115200, timeout=1)
+        ser = serial.Serial(port=at_port, baudrate=115200, timeout=1)
         time.sleep(0.3)
         ser.reset_input_buffer()
         ser.write(b'AT+BOOTLDR\r\n')
@@ -83,10 +91,10 @@ def initBootloader(atPort):
         logger.exception(ex)
     return success
 
-def upgradeFirmware(ans, atPort):
+def upgrade_firmware(ans, at_port):
     if ans == "Y":
-        logger.info("Actualizando FW...")
-        bootloaderOk = initBootloader(atPort)
+        logger.info("Upgrading Firmware...")
+        bootloaderOk = init_bootloader_mode(at_port)
         if bootloaderOk:
             logger.info("----------------------------------- Fastboot Mode ---------------------------------------")
             subprocess.call("fastboot devices")
@@ -103,7 +111,7 @@ def upgradeFirmware(ans, atPort):
 
 
 def main():
-    logging.info("Iniciando programa de actualizacion de firmware modulo Sim7600")
+    logging.info("############# Initializing ################")
     fw_available = [fw for fw in os.listdir() if "LE" in fw]
     if len(fw_available) == 1:
         newFWVersion = fw_available[0]
@@ -117,35 +125,35 @@ def main():
             os.chdir(newFWVersion)
         except Exception:
             logger.info("Wrong index. It's not that hard... Exiting!")
-            sys.exit()
+            return False
 
-    logger.info(f"Firmware a instalar: {newFWVersion}")
+    logger.info(f"Firmware to be installed: {newFWVersion}")
     time.sleep(2)
     for i in range(3):
-        logger.info("Buscando puertos...")
-        atPort = findATPort()
-        if not atPort:
-            logger.error(f"Puerto no encontrado. Revisa la conexión y presiona enter para intentar [{i+1}/3]")
+        logger.info("Searching AT Port...")
+        at_port = find_at_port()
+        if not at_port:
+            logger.error(f"Port not found. Check USB connection and press enter to retry [{i+1}/3]")
             input()
         else:
             break
-    if not atPort:
-        logger.error("Puerto no encontrado")
+    if not at_port:
+        logger.error("Port not found")
     else:
-        logger.info(f"SIM7600 encontrado en {atPort}")
-        logger.info("Revisando version de FW actual...")
-        actualFWVersion = getFWVersion(atPort)
-        logger.info(f"   Version = {actualFWVersion}")
+        logger.info(f"SIM7600 AT Port found: {at_port}")
+        logger.info("Checking current FW Version...")
+        actualFWVersion = get_current_fw_version(at_port)
+        logger.info(f"   Current Version = {actualFWVersion}")
         if newFWVersion != actualFWVersion:
-            logger.info("Actualizacion disponible! Deseas instalar? [Y/N] ")
+            logger.info("Upgrade available! Go? [Y/N] ")
             ans = input("-------> ")
-            upgradeFirmware(ans, atPort)
+            upgrade_firmware(ans, at_port)
         else:
-            logger.info("Ya tienes esta version instalada! Deseas reinstalar?? [Y/N] ")
+            logger.info("Already you have that FW version installed! Do you want to reinstall?? [Y/N] ")
             ans = input("-------> ")
-            upgradeFirmware(ans, atPort)
+            upgrade_firmware(ans, at_port)
 
-    logger.info("Programa finalizado!")
+    logger.info("Program finished!")
 
 if __name__ == "__main__":
     main()
