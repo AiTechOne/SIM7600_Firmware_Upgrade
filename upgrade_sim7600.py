@@ -43,7 +43,7 @@ logger.addHandler(file_handler)
 def find_at_port():
     at_port = None
     if platform.system() == 'Linux':
-        if os.path.isfile('/dev/SimAT'):
+        if os.path.exists('/dev/SimAT'):
             return '/dev/SimAT'
     elif platform.system() == 'Windows':
         ports = serial.tools.list_ports.comports()
@@ -97,17 +97,17 @@ def upgrade_firmware(ans, at_port):
         bootloaderOk = init_bootloader_mode(at_port)
         if bootloaderOk:
             logger.info("----------------------------------- Fastboot Mode ---------------------------------------")
-            subprocess.call("fastboot devices")
-            subprocess.call("fastboot flash aboot appsboot.mbn")
-            subprocess.call("fastboot flash rpm rpm.mbn")
-            subprocess.call("fastboot flash sbl sbl1.mbn")
-            subprocess.call("fastboot flash tz tz.mbn")
-            subprocess.call("fastboot flash modem modem.img")
-            subprocess.call("fastboot flash boot boot.img")
-            subprocess.call("fastboot flash system system.img")
-            subprocess.call("fastboot flash recovery recovery.img")
-            subprocess.call("fastboot flash recoveryfs recoveryfs.img")
-            subprocess.call("fastboot reboot")
+            subprocess.call("fastboot devices".split())
+            subprocess.call("fastboot flash aboot appsboot.mbn".split())
+            subprocess.call("fastboot flash rpm rpm.mbn".split())
+            subprocess.call("fastboot flash sbl sbl1.mbn".split())
+            subprocess.call("fastboot flash tz tz.mbn".split())
+            subprocess.call("fastboot flash modem modem.img".split())
+            subprocess.call("fastboot flash boot boot.img".split())
+            subprocess.call("fastboot flash system system.img".split())
+            subprocess.call("fastboot flash recovery recovery.img".split())
+            subprocess.call("fastboot flash recoveryfs recoveryfs.img".split())
+            subprocess.call("fastboot reboot".split())
 
 
 def main():
