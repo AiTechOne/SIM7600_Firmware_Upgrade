@@ -1,10 +1,10 @@
-# SIM7600SA-H Firmware Update (Python3 Code)
+# SIM7600 Firmware Upgrade Tool (Python3 Code)
 Simple python3 code to update SIM7600SA-H firmware (may work with others but you must check firmware version first!) on Windows or Linux. Some messages are in spanish, but it's very simple to use.
 
 # Testing using
 - W10-Ubuntu20-Debian9
 - Fastboot 29.0.6-6198805 (should work with others)
-- Python3.7.4
+- Python3.7.4+
 - pyserial 3.4 package for python (should work with others)
 
 # Usage
