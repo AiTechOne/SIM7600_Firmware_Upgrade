@@ -17,8 +17,6 @@ import os.path
 import os
 import platform
 
-# TODO: mejorar subprocess.call para exportar salida en file_handler (solo se printea)
-
 ##################################################################################################################
 #                                                 logger init                                                    #
 ##################################################################################################################
